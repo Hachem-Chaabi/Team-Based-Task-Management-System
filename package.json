@@ -5,9 +5,9 @@
   "author": "Hachem Chaabi",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon",
+    "start": "npm run prod",
     "dev": "npm run start",
-    "build": "rimraf ./dist && tsc",
+    "build": "npm install && npx prisma generate && npm run build",
     "prod": "cross-env NODE_ENV=prod node dist/server.js"
   },
   "dependencies": {
