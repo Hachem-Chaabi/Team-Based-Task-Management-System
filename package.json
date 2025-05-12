@@ -7,7 +7,7 @@
   "scripts": {
     "start": "npm run prod",
     "dev": "npm run start",
-    "build": "npm install && npx prisma generate && npm run build",
+    "build": "rimraf ./dist && tsc",
     "prod": "cross-env NODE_ENV=prod node dist/server.js"
   },
   "dependencies": {
