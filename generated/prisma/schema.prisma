@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String     @id @default(uuid())
+  username      String     @unique
+  email         String     @unique
+  passwordHash  String
+  role          Role       @default(user)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  assignedTasks Task[]     @relation("UserTasks")
+  userTeams     UserTeam[]
+
+  @@map("users")
+}
+
+model Team {
+  id           String        @id @default(uuid())
+  name         String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  teamProjects TeamProject[]
+  userTeams    UserTeam[]
+
+  @@map("teams")
+}
+
+model Project {
+  id           String        @id @default(uuid())
+  title        String
+  description  String
+  createdBy    String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  tasks        Task[]
+  teamProjects TeamProject[]
+
+  @@map("projects")
+}
+
+model Task {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  dueDate     DateTime
+  status      String
+  important   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  projectId   String
+  assignedTo  String?
+  assignee    User?    @relation("UserTasks", fields: [assignedTo], references: [id])
+  project     Project  @relation(fields: [projectId], references: [id])
+
+  @@map("tasks")
+}
+
+model UserTeam {
+  userId String
+  teamId String
+  team   Team   @relation(fields: [teamId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@id([userId, teamId])
+  @@map("user_teams")
+}
+
+model TeamProject {
+  teamId    String
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
+  team      Team    @relation(fields: [teamId], references: [id])
+
+  @@id([teamId, projectId])
+  @@map("team_projects")
+}
+
+enum Role {
+  superadmin
+  admin
+  user
+}
