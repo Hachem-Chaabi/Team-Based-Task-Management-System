@@ -192,6 +192,10 @@ const config = {
         "fromEnvVar": null,
         "value": "windows",
         "native": true
+      },
+      {
+        "fromEnvVar": null,
+        "value": "debian-openssl-3.0.x"
       }
     ],
     "previewFeatures": [],
@@ -209,16 +213,17 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": "postgresql://neondb_owner:npg_IXn35dVRqagU@ep-red-frost-a4lza6ib-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require"
+        "value": null
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id            String     @id @default(uuid())\n  username      String     @unique\n  email         String     @unique\n  passwordHash  String\n  role          Role       @default(user)\n  createdAt     DateTime   @default(now())\n  updatedAt     DateTime   @updatedAt\n  assignedTasks Task[]     @relation(\"UserTasks\")\n  userTeams     UserTeam[]\n\n  @@map(\"users\")\n}\n\nmodel Team {\n  id           String        @id @default(uuid())\n  name         String\n  createdAt    DateTime      @default(now())\n  updatedAt    DateTime      @updatedAt\n  teamProjects TeamProject[]\n  userTeams    UserTeam[]\n\n  @@map(\"teams\")\n}\n\nmodel Project {\n  id           String        @id @default(uuid())\n  title        String\n  description  String\n  createdBy    String\n  createdAt    DateTime      @default(now())\n  updatedAt    DateTime      @updatedAt\n  tasks        Task[]\n  teamProjects TeamProject[]\n\n  @@map(\"projects\")\n}\n\nmodel Task {\n  id          String   @id @default(uuid())\n  title       String\n  description String\n  dueDate     DateTime\n  status      String\n  important   Boolean  @default(false)\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n  projectId   String\n  assignedTo  String?\n  assignee    User?    @relation(\"UserTasks\", fields: [assignedTo], references: [id])\n  project     Project  @relation(fields: [projectId], references: [id])\n\n  @@map(\"tasks\")\n}\n\nmodel UserTeam {\n  userId String\n  teamId String\n  team   Team   @relation(fields: [teamId], references: [id])\n  user   User   @relation(fields: [userId], references: [id])\n\n  @@id([userId, teamId])\n  @@map(\"user_teams\")\n}\n\nmodel TeamProject {\n  teamId    String\n  projectId String\n  project   Project @relation(fields: [projectId], references: [id])\n  team      Team    @relation(fields: [teamId], references: [id])\n\n  @@id([teamId, projectId])\n  @@map(\"team_projects\")\n}\n\nenum Role {\n  superadmin\n  admin\n  user\n}\n",
-  "inlineSchemaHash": "d3d7f6fccf8fc8a88414580ddb831110d4f617c011cb3f55ad2d46c8b3873b62",
+  "inlineSchema": "generator client {\n  provider      = \"prisma-client-js\"\n  output        = \"../generated/prisma\"\n  binaryTargets = [\"native\", \"debian-openssl-3.0.x\"]\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id            String     @id @default(uuid())\n  username      String     @unique\n  email         String     @unique\n  passwordHash  String\n  role          Role       @default(user)\n  createdAt     DateTime   @default(now())\n  updatedAt     DateTime   @updatedAt\n  assignedTasks Task[]     @relation(\"UserTasks\")\n  userTeams     UserTeam[]\n\n  @@map(\"users\")\n}\n\nmodel Team {\n  id           String        @id @default(uuid())\n  name         String\n  createdAt    DateTime      @default(now())\n  updatedAt    DateTime      @updatedAt\n  teamProjects TeamProject[]\n  userTeams    UserTeam[]\n\n  @@map(\"teams\")\n}\n\nmodel Project {\n  id           String        @id @default(uuid())\n  title        String\n  description  String\n  createdBy    String\n  createdAt    DateTime      @default(now())\n  updatedAt    DateTime      @updatedAt\n  tasks        Task[]\n  teamProjects TeamProject[]\n\n  @@map(\"projects\")\n}\n\nmodel Task {\n  id          String   @id @default(uuid())\n  title       String\n  description String\n  dueDate     DateTime\n  status      String\n  important   Boolean  @default(false)\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n  projectId   String\n  assignedTo  String?\n  assignee    User?    @relation(\"UserTasks\", fields: [assignedTo], references: [id])\n  project     Project  @relation(fields: [projectId], references: [id])\n\n  @@map(\"tasks\")\n}\n\nmodel UserTeam {\n  userId String\n  teamId String\n  team   Team   @relation(fields: [teamId], references: [id])\n  user   User   @relation(fields: [userId], references: [id])\n\n  @@id([userId, teamId])\n  @@map(\"user_teams\")\n}\n\nmodel TeamProject {\n  teamId    String\n  projectId String\n  project   Project @relation(fields: [projectId], references: [id])\n  team      Team    @relation(fields: [teamId], references: [id])\n\n  @@id([teamId, projectId])\n  @@map(\"team_projects\")\n}\n\nenum Role {\n  superadmin\n  admin\n  user\n}\n",
+  "inlineSchemaHash": "daffcb3bd9988ddd7f3c3c079b32fbb1322b6f4d9b232bf7f021feaf94128174",
   "copyEngine": true
 }
 
@@ -259,6 +264,10 @@ Object.assign(exports, Prisma)
 // file annotations for bundling tools to include these files
 path.join(__dirname, "query_engine-windows.dll.node");
 path.join(process.cwd(), "generated/prisma/query_engine-windows.dll.node")
+
+// file annotations for bundling tools to include these files
+path.join(__dirname, "libquery_engine-debian-openssl-3.0.x.so.node");
+path.join(process.cwd(), "generated/prisma/libquery_engine-debian-openssl-3.0.x.so.node")
 // file annotations for bundling tools to include these files
 path.join(__dirname, "schema.prisma");
 path.join(process.cwd(), "generated/prisma/schema.prisma")
