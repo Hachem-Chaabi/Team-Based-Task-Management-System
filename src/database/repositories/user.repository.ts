@@ -73,24 +73,8 @@ const getSession = async (refreshToken: string) => {
   return session;
 };
 
-const updateSession = async (sessionId: string, refreshToken: string) => {
-  await prisma.session.update({
-    where: { id: sessionId },
-    data: {
-      refreshToken,
-      expiresAt: new Date(
-        Date.now() + Number(process.env.COOKIE_EXPIRES_TIME) * DAY_IN_MILLISECOND,
-      ),
-    },
-  });
-};
-
-const deleteSession = async (refreshToken: string) => {
-  await prisma.session.deleteMany({ where: { refreshToken } });
-};
-
-const deleteSessionByUserID = async (userId: string) => {
-  await prisma.session.deleteMany({ where: { userId } });
+const deleteSession = async (options: object) => {
+  await prisma.session.deleteMany({ where: options });
 };
 
 export default {
@@ -103,7 +87,5 @@ export default {
   remove,
   createSession,
   getSession,
-  updateSession,
-  deleteSession,
-  deleteSessionByUserID,
+  deleteSession
 };

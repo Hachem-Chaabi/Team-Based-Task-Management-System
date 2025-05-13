@@ -18,15 +18,12 @@ const login = async (email: string, password: string) => {
     throw new ErrorHandler('Invalid credentials', HttpCode.BAD_REQUEST);
   }
 
-  // 🧹 Delete old sessions for the user
-  await userRepository.deleteSessionByUserID(user?.id);
+  await userRepository.deleteSession({ userId: user?.id });
 
-  // 🔐 Create a new session and hash refresh token
-  const rawRefreshToken = JwtHelper.GenerateToken({ id: user.id }, TokenEnum.refresh);
+  const refreshToken = JwtHelper.GenerateToken({ id: user.id }, TokenEnum.refresh);
 
-  const session = await userRepository.createSession(user.id, rawRefreshToken);
+  const session = await userRepository.createSession(user.id, refreshToken);
 
-  // 🧾 Attach sessionId to access token payload
   const payload: TokenData = {
     id: user.id,
     sessionId: session?.id,
@@ -34,16 +31,14 @@ const login = async (email: string, password: string) => {
 
   const accessToken = JwtHelper.GenerateToken(payload, TokenEnum.access);
 
-  // 🧼 Remove sensitive data
   user.passwordHash = undefined;
 
   return {
     user,
     token: accessToken,
-    refreshToken: rawRefreshToken,
+    refreshToken: refreshToken,
   };
 };
-
 
 const register = async (name: string, email: string, password: string) => {
   const exists = await userRepository.getOneByQuery({ email });
@@ -52,22 +47,34 @@ const register = async (name: string, email: string, password: string) => {
     throw new ErrorHandler('User already exists!', HttpCode.FORBIDDEN);
   }
 
-  password = await JwtHelper.PasswordHashing(password);
+  // Hash the password
+  const hashedPassword = await JwtHelper.PasswordHashing(password);
 
+  // Create the user
   const user = await userRepository.create({
     username: name,
-    passwordHash: password,
+    passwordHash: hashedPassword,
     email,
   } as User);
 
-  const payload: TokenData = { id: user?.id };
+  const rawRefreshToken = JwtHelper.GenerateToken({ id: user.id }, TokenEnum.refresh);
 
-  const token = JwtHelper.GenerateToken(payload, TokenEnum.access);
-  const refreshToken = JwtHelper.GenerateToken(payload, TokenEnum.refresh);
+  const session = await userRepository.createSession(user.id, rawRefreshToken);
+
+  const payload: TokenData = {
+    id: user.id,
+    sessionId: session.id,
+  };
+
+  const accessToken = JwtHelper.GenerateToken(payload, TokenEnum.access);
 
   user.passwordHash = undefined;
 
-  return { user, token, refreshToken };
+  return {
+    user,
+    token: accessToken,
+    refreshToken: rawRefreshToken,
+  };
 };
 
 const refreshToken = async (refreshToken: string) => {
@@ -83,20 +90,22 @@ const refreshToken = async (refreshToken: string) => {
     throw new ErrorHandler('Invalid session!', HttpCode.UNAUTHORIZED);
   }
 
-  const payload: TokenData = { id: decoded?.id };
+  await userRepository.deleteSession({ userId: session?.userId });
+
+  const newRefreshToken = JwtHelper.GenerateToken({ id: decoded.id }, TokenEnum.refresh);
+
+  const newSession = await userRepository.createSession(decoded.id, newRefreshToken);
+
+  const payload: TokenData = { id: decoded?.id, sessionId: newSession?.id };
 
   const token = JwtHelper.GenerateToken(payload, TokenEnum.access);
-  const newRefreshToken = JwtHelper.GenerateToken(payload, TokenEnum.refresh);
-
-  // update session
-  await userRepository.updateSession(session?.id, newRefreshToken);
 
   return { token, refreshToken: newRefreshToken };
 };
 
 const deleteSession = async (refreshToken: string) => {
-  await userRepository.deleteSession(refreshToken)
-}
+  await userRepository.deleteSession({ refreshToken });
+};
 
 const getUserProfile = async (id: string) => {
   const user = await userRepository.getById(id);
@@ -141,16 +150,6 @@ const getUserById = async (id: string) => {
   return user;
 };
 
-// const createUser = async (name: string, email: string, password: string) => {
-//   const createdUser = await userRepository.create({
-//     username: name,
-//     passwordHash: password,
-//     email,
-//   } as User);
-
-//   return createdUser;
-// };
-
 const updateUser = async (id: string, item: User) => {
   const user = await userRepository.getById(id);
 
@@ -183,8 +182,7 @@ export default {
   updateProfile,
   getAllUsers,
   getUserById,
-  // createUser,
   updateUser,
   deleteUser,
-  deleteSession
+  deleteSession,
 };
