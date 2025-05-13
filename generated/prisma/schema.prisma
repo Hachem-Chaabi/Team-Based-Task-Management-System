@@ -19,8 +19,18 @@ model User {
   updatedAt     DateTime   @updatedAt
   assignedTasks Task[]     @relation("UserTasks")
   userTeams     UserTeam[]
+  sessions      Session[] // Relation to Session
 
   @@map("users")
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  refreshToken String // Store a hashed token
+  createdAt    DateTime @default(now())
+  expiresAt    DateTime
 }
 
 model Team {

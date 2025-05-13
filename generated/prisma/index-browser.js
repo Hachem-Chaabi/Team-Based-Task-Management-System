@@ -130,6 +130,14 @@ exports.Prisma.UserScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.SessionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  refreshToken: 'refreshToken',
+  createdAt: 'createdAt',
+  expiresAt: 'expiresAt'
+};
+
 exports.Prisma.TeamScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -191,6 +199,7 @@ exports.Role = exports.$Enums.Role = {
 
 exports.Prisma.ModelName = {
   User: 'User',
+  Session: 'Session',
   Team: 'Team',
   Project: 'Project',
   Task: 'Task',
