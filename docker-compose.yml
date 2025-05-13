@@ -1,0 +1,40 @@
+# version: '3.8'
+
+services:
+#   db:
+#     image: postgres
+#     container_name: db
+#     restart: always
+#     environment:
+#       POSTGRES_USER: neondb_owner
+#       POSTGRES_PASSWORD: npg_IXn35dVRqagU
+#       POSTGRES_DB: neondb
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - db-data:/var/lib/postgresql/data
+#     networks:
+#       - my-app
+
+  api:
+    build: 
+      dockerfile: ./DockerFile
+    container_name: api
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+    # depends_on:
+    #   - db
+    # networks:
+    #   - my-app
+
+# networks:
+#   my-app:
+#     driver: bridge
+
+volumes:
+  db-data:

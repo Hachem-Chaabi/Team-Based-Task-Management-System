@@ -205,6 +205,14 @@ const config = {
       {
         "fromEnvVar": null,
         "value": "debian-openssl-3.0.x"
+      },
+      {
+        "fromEnvVar": null,
+        "value": "linux-musl"
+      },
+      {
+        "fromEnvVar": null,
+        "value": "linux-musl-openssl-3.0.x"
       }
     ],
     "previewFeatures": [],
@@ -231,8 +239,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider      = \"prisma-client-js\"\n  output        = \"../generated/prisma\"\n  binaryTargets = [\"native\", \"debian-openssl-3.0.x\"]\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id            String     @id @default(uuid())\n  username      String     @unique\n  email         String     @unique\n  passwordHash  String\n  role          Role       @default(user)\n  createdAt     DateTime   @default(now())\n  updatedAt     DateTime   @updatedAt\n  assignedTasks Task[]     @relation(\"UserTasks\")\n  userTeams     UserTeam[]\n  sessions      Session[] // Relation to Session\n\n  @@map(\"users\")\n}\n\nmodel Session {\n  id           String   @id @default(uuid())\n  userId       String\n  user         User     @relation(fields: [userId], references: [id])\n  refreshToken String // Store a hashed token\n  createdAt    DateTime @default(now())\n  expiresAt    DateTime\n}\n\nmodel Team {\n  id           String        @id @default(uuid())\n  name         String\n  createdAt    DateTime      @default(now())\n  updatedAt    DateTime      @updatedAt\n  teamProjects TeamProject[]\n  userTeams    UserTeam[]\n\n  @@map(\"teams\")\n}\n\nmodel Project {\n  id           String        @id @default(uuid())\n  title        String\n  description  String\n  createdBy    String\n  createdAt    DateTime      @default(now())\n  updatedAt    DateTime      @updatedAt\n  tasks        Task[]\n  teamProjects TeamProject[]\n\n  @@map(\"projects\")\n}\n\nmodel Task {\n  id          String   @id @default(uuid())\n  title       String\n  description String\n  dueDate     DateTime\n  status      String\n  important   Boolean  @default(false)\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n  projectId   String\n  assignedTo  String?\n  assignee    User?    @relation(\"UserTasks\", fields: [assignedTo], references: [id])\n  project     Project  @relation(fields: [projectId], references: [id])\n\n  @@map(\"tasks\")\n}\n\nmodel UserTeam {\n  userId String\n  teamId String\n  team   Team   @relation(fields: [teamId], references: [id])\n  user   User   @relation(fields: [userId], references: [id])\n\n  @@id([userId, teamId])\n  @@map(\"user_teams\")\n}\n\nmodel TeamProject {\n  teamId    String\n  projectId String\n  project   Project @relation(fields: [projectId], references: [id])\n  team      Team    @relation(fields: [teamId], references: [id])\n\n  @@id([teamId, projectId])\n  @@map(\"team_projects\")\n}\n\nenum Role {\n  superadmin\n  admin\n  user\n}\n",
-  "inlineSchemaHash": "2a93cd553c3d552f9d248621eb0029888266fbfdcc882e2bd41f14758b9b673a",
+  "inlineSchema": "generator client {\n  provider      = \"prisma-client-js\"\n  output        = \"../generated/prisma\"\n  binaryTargets = [\"native\", \"debian-openssl-3.0.x\", \"linux-musl\", \"linux-musl-openssl-3.0.x\"]\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id            String     @id @default(uuid())\n  username      String     @unique\n  email         String     @unique\n  passwordHash  String\n  role          Role       @default(user)\n  createdAt     DateTime   @default(now())\n  updatedAt     DateTime   @updatedAt\n  assignedTasks Task[]     @relation(\"UserTasks\")\n  userTeams     UserTeam[]\n  sessions      Session[] // Relation to Session\n\n  @@map(\"users\")\n}\n\nmodel Session {\n  id           String   @id @default(uuid())\n  userId       String\n  user         User     @relation(fields: [userId], references: [id])\n  refreshToken String // Store a hashed token\n  createdAt    DateTime @default(now())\n  expiresAt    DateTime\n}\n\nmodel Team {\n  id           String        @id @default(uuid())\n  name         String\n  createdAt    DateTime      @default(now())\n  updatedAt    DateTime      @updatedAt\n  teamProjects TeamProject[]\n  userTeams    UserTeam[]\n\n  @@map(\"teams\")\n}\n\nmodel Project {\n  id           String        @id @default(uuid())\n  title        String\n  description  String\n  createdBy    String\n  createdAt    DateTime      @default(now())\n  updatedAt    DateTime      @updatedAt\n  tasks        Task[]\n  teamProjects TeamProject[]\n\n  @@map(\"projects\")\n}\n\nmodel Task {\n  id          String   @id @default(uuid())\n  title       String\n  description String\n  dueDate     DateTime\n  status      String\n  important   Boolean  @default(false)\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n  projectId   String\n  assignedTo  String?\n  assignee    User?    @relation(\"UserTasks\", fields: [assignedTo], references: [id])\n  project     Project  @relation(fields: [projectId], references: [id])\n\n  @@map(\"tasks\")\n}\n\nmodel UserTeam {\n  userId String\n  teamId String\n  team   Team   @relation(fields: [teamId], references: [id])\n  user   User   @relation(fields: [userId], references: [id])\n\n  @@id([userId, teamId])\n  @@map(\"user_teams\")\n}\n\nmodel TeamProject {\n  teamId    String\n  projectId String\n  project   Project @relation(fields: [projectId], references: [id])\n  team      Team    @relation(fields: [teamId], references: [id])\n\n  @@id([teamId, projectId])\n  @@map(\"team_projects\")\n}\n\nenum Role {\n  superadmin\n  admin\n  user\n}\n",
+  "inlineSchemaHash": "4c4cda1d92836fa50d8fd6857f3a7188fe93dea131e75119bcc4fd7f3305f9f2",
   "copyEngine": true
 }
 
@@ -277,6 +285,14 @@ path.join(process.cwd(), "generated/prisma/query_engine-windows.dll.node")
 // file annotations for bundling tools to include these files
 path.join(__dirname, "libquery_engine-debian-openssl-3.0.x.so.node");
 path.join(process.cwd(), "generated/prisma/libquery_engine-debian-openssl-3.0.x.so.node")
+
+// file annotations for bundling tools to include these files
+path.join(__dirname, "libquery_engine-linux-musl.so.node");
+path.join(process.cwd(), "generated/prisma/libquery_engine-linux-musl.so.node")
+
+// file annotations for bundling tools to include these files
+path.join(__dirname, "libquery_engine-linux-musl-openssl-3.0.x.so.node");
+path.join(process.cwd(), "generated/prisma/libquery_engine-linux-musl-openssl-3.0.x.so.node")
 // file annotations for bundling tools to include these files
 path.join(__dirname, "schema.prisma");
 path.join(process.cwd(), "generated/prisma/schema.prisma")
