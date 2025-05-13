@@ -20,14 +20,14 @@ const login = async (email: string, password: string) => {
 
   await userRepository.deleteSession({ userId: user?.id });
 
-  const refreshToken = JwtHelper.GenerateToken({ id: user.id }, TokenEnum.refresh);
-
-  const session = await userRepository.createSession(user.id, refreshToken);
+  const session = await userRepository.createSession(user.id);
 
   const payload: TokenData = {
     id: user.id,
     sessionId: session?.id,
   };
+
+  const refreshToken = JwtHelper.GenerateToken(payload, TokenEnum.refresh);
 
   const accessToken = JwtHelper.GenerateToken(payload, TokenEnum.access);
 
@@ -57,14 +57,14 @@ const register = async (name: string, email: string, password: string) => {
     email,
   } as User);
 
-  const rawRefreshToken = JwtHelper.GenerateToken({ id: user.id }, TokenEnum.refresh);
-
-  const session = await userRepository.createSession(user.id, rawRefreshToken);
+  const session = await userRepository.createSession(user.id);
 
   const payload: TokenData = {
     id: user.id,
     sessionId: session.id,
   };
+
+  const refreshToken = JwtHelper.GenerateToken(payload, TokenEnum.refresh);
 
   const accessToken = JwtHelper.GenerateToken(payload, TokenEnum.access);
 
@@ -73,7 +73,7 @@ const register = async (name: string, email: string, password: string) => {
   return {
     user,
     token: accessToken,
-    refreshToken: rawRefreshToken,
+    refreshToken,
   };
 };
 
@@ -84,27 +84,27 @@ const refreshToken = async (refreshToken: string) => {
     throw new ErrorHandler('Invalid Token!', HttpCode.UNAUTHORIZED);
   }
 
-  const session = await userRepository.getSession(refreshToken);
+  const session = await userRepository.getSession(decoded.sessionId);
 
   if (!session) {
     throw new ErrorHandler('Invalid session!', HttpCode.UNAUTHORIZED);
   }
 
-  await userRepository.deleteSession({ userId: session?.userId });
+  await userRepository.deleteSession({ userId: decoded?.id });
 
-  const newRefreshToken = JwtHelper.GenerateToken({ id: decoded.id }, TokenEnum.refresh);
-
-  const newSession = await userRepository.createSession(decoded.id, newRefreshToken);
+  const newSession = await userRepository.createSession(decoded.id);
 
   const payload: TokenData = { id: decoded?.id, sessionId: newSession?.id };
+
+  const newRefreshToken = JwtHelper.GenerateToken(payload, TokenEnum.refresh);
 
   const token = JwtHelper.GenerateToken(payload, TokenEnum.access);
 
   return { token, refreshToken: newRefreshToken };
 };
 
-const deleteSession = async (refreshToken: string) => {
-  await userRepository.deleteSession({ refreshToken });
+const deleteSession = async (userId: string) => {
+  await userRepository.deleteSession({ userId });
 };
 
 const getUserProfile = async (id: string) => {

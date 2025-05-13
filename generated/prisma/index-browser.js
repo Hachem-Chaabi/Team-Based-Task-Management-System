@@ -133,7 +133,6 @@ exports.Prisma.UserScalarFieldEnum = {
 exports.Prisma.SessionScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
-  refreshToken: 'refreshToken',
   createdAt: 'createdAt',
   expiresAt: 'expiresAt'
 };

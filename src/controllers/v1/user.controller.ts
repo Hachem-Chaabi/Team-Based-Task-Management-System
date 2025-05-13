@@ -49,7 +49,7 @@ const logout: RequestHandler = AsyncHandler(async (req: Request, res: Response):
   const { refreshToken } = req.cookies;
 
   if (refreshToken) {
-    await userService.deleteSession(refreshToken);
+    await userService.deleteSession(req?.user?.id);
   }
 
   res.cookie('refreshToken', null, {

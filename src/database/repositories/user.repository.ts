@@ -51,11 +51,10 @@ const remove = async (id: string) => {
 };
 
 // Sessions
-const createSession = async (userId: string, refreshToken: string) => {
+const createSession = async (userId: string) => {
   const session = await prisma.session.create({
     data: {
       userId,
-      refreshToken,
       expiresAt: new Date(
         Date.now() + Number(process.env.COOKIE_EXPIRES_TIME) * DAY_IN_MILLISECOND,
       ),
@@ -65,9 +64,9 @@ const createSession = async (userId: string, refreshToken: string) => {
   return session;
 };
 
-const getSession = async (refreshToken: string) => {
+const getSession = async (id: string) => {
   const session = await prisma.session.findFirst({
-    where: { refreshToken, expiresAt: { gt: new Date() } },
+    where: { id, expiresAt: { gt: new Date() } },
   });
 
   return session;
