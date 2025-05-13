@@ -1,0 +1,40 @@
+paths:
+  /api/users-teams/{userId}/{teamId}:
+    get:
+      security:
+        - BearerAuth: []
+      tags:
+        - User-Team
+      summary: get one user and its team by user id and team id
+      parameters:
+        - name: userId
+          in: path
+          description: ID of User to get
+          required: true
+          schema:
+            type: string
+        - name: teamId
+          in: path
+          description: ID of Team to get
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: Internal server error!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"

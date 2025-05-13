@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "start": "npm run prod",
-    "dev": "npm run start",
+    "dev": "nodemon",
     "build": "rimraf ./dist && tsc",
     "prod": "node dist/server.js"
   },

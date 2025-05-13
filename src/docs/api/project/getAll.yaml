@@ -1,0 +1,21 @@
+paths:
+  /api/projects:
+    get:
+      security:
+        - BearerAuth: []
+      tags:
+        - Project
+      summary: get all the projects
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        500:
+          description: Internal server error!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"

@@ -1,0 +1,6 @@
+tags:
+  - name: User
+    description: Everything about Users
+
+  - name: Task
+    description: Everything about Tasks

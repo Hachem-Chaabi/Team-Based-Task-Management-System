@@ -1,0 +1,146 @@
+components:
+  schemas:
+    UserLogin:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          description: The email of the user
+        password:
+          type: string
+          description: The password of the user
+
+    UserRegister:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+          description: The name of the user
+        email:
+          type: string
+          description: The email of the user
+        password:
+          type: string
+          description: The password of the user
+
+    UpdateUser:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the user
+        email:
+          type: string
+          description: The email of the user
+
+    Task:
+      type: object
+      required:
+        - name
+        - description
+        - dueDate
+        - status
+        - important
+        - projectId
+      properties:
+        name:
+          type: string
+          description: The name of the task
+        description:
+          type: string
+          description: The description of the task
+        dueDate:
+          type: string
+          description: The deadline of the task
+        status:
+          type: string
+          description: The current status of the task
+        important:
+          type: boolean
+          default: false
+          description: The importance of the task
+        projectId:
+          type: string
+          description: The assigned project id
+
+    Project:
+      type: object
+      required:
+        - title
+        - description
+      properties:
+        title:
+          type: string
+          description: The title of the project
+        description:
+          type: string
+          description: the description of the project
+
+    Team:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: the name of the team
+
+    User-Team:
+      type: object
+      required:
+        - userId
+        - teamId
+      properties:
+        userId:
+          type: string
+          description: the id of the user
+        teamId:
+          type: string
+          description: the id of the team
+
+    Team-Project:
+      type: object
+      required:
+        - teamId
+        - projectId
+      properties:
+        teamId:
+          type: string
+          description: the id of the team
+        projectId:
+          type: string
+          description: the id of the project
+
+    Success:
+      type: object
+      properties:
+        success:
+          type: boolean
+          default: true
+        message:
+          type: string
+        data:
+          type: object
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          default: false
+        statusCode:
+          type: number
+        message:
+          type: string
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer

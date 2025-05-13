@@ -1,0 +1,40 @@
+paths:
+  /api/superadmin/tasks/{id}:
+    put:
+      security:
+        - BearerAuth: []
+      tags:
+        - Task
+      summary: update a task from all tasks
+      parameters:
+        - name: id
+          in: path
+          description: ID of Task to update
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#components/schemas/Task"
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: Internal server error!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"

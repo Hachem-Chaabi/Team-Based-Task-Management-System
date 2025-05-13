@@ -1,0 +1,27 @@
+paths:
+  /api/users-teams:
+    post:
+      security:
+        - BearerAuth: []
+      tags:
+        - User-Team
+      summary: assign a user to a team
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#components/schemas/User-Team"
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        500:
+          description: Internal server error!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"

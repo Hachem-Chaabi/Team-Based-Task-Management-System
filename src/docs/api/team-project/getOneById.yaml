@@ -1,0 +1,40 @@
+paths:
+  /api/teams-projects/{teamId}/{projectId}:
+    get:
+      security:
+        - BearerAuth: []
+      tags:
+        - Team-Project
+      summary: get one team and its project by team id and project id
+      parameters:
+        - name: teamId
+          in: path
+          description: ID of Team to get
+          required: true
+          schema:
+            type: string
+        - name: projectId
+          in: path
+          description: ID of Project to get
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: Internal server error!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"

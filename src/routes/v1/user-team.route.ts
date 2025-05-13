@@ -25,6 +25,7 @@ router
   .delete(
     Authorization.Authenticated,
     AuthorizeRole.AuthorizeRole([RolesEnum.admin, RolesEnum.superAdmin]),
+    validator(UserTeamValidator.userTeamSchema),
     UserTeamController.remove,
   );
 

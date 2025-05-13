@@ -1,0 +1,33 @@
+paths:
+  /api/teams-projects:
+    delete:
+      security:
+        - BearerAuth: []
+      tags:
+        - Team-Project
+      summary: remove a team from a project
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#components/schemas/Team-Project"
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: Internal server error!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"

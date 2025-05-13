@@ -1,0 +1,21 @@
+paths:
+  /api/teams-projects:
+    get:
+      security:
+        - BearerAuth: []
+      tags:
+        - Team-Project
+      summary: get all the teams and their project
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        500:
+          description: Internal server error!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"

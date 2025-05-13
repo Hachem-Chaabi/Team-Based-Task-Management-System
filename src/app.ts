@@ -9,6 +9,8 @@ import errors from './middlewares/errors';
 import cookieParser from 'cookie-parser';
 import notFound from './middlewares/notFound';
 import routes from './routes';
+import swaggerUI from 'swagger-ui-express';
+import swaggerSpec from './docs/config';
 
 // Config Env Path
 dotenv.config();
@@ -35,9 +37,11 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // API Routes
 app.use('/api', routes);
+app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 // Not Found + Global Error Handler
 app.use(notFound);
 app.use(errors);
+
 
 export default app;

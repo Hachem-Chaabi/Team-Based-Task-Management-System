@@ -1,0 +1,33 @@
+paths:
+  /api/users-teams:
+    delete:
+      security:
+        - BearerAuth: []
+      tags:
+        - User-Team
+      summary: remove a user from a team
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#components/schemas/User-Team"
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: Internal server error!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
