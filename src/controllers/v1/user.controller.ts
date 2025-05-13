@@ -5,6 +5,7 @@ import { HttpCode } from '../../utils/httpCode';
 
 import AsyncHandler from 'express-async-handler';
 import UserService from '../../services/v1/user.service';
+import userService from '../../services/v1/user.service';
 
 // @desc    Auth user & get token
 // @route   POST /api/login
@@ -26,6 +27,7 @@ const login: RequestHandler = AsyncHandler(async (req: Request, res: Response): 
 const register: RequestHandler = AsyncHandler(
   async (req: Request, res: Response): Promise<void> => {
     const { name, email, password } = req?.body;
+
     const result = await UserService.register(name, email.trim().toLowerCase(), password);
     res.cookie('refreshToken', result.refreshToken, {
       httpOnly: true,
@@ -44,6 +46,12 @@ const register: RequestHandler = AsyncHandler(
 // @route   GET /api/logout
 // @access  Private
 const logout: RequestHandler = AsyncHandler(async (req: Request, res: Response): Promise<void> => {
+  const { refreshToken } = req.cookies;
+
+  if (refreshToken) {
+    await userService.deleteSession(refreshToken);
+  }
+
   res.cookie('refreshToken', null, {
     expires: new Date(Date.now()),
     httpOnly: true,
@@ -63,7 +71,13 @@ const refreshToken: RequestHandler = AsyncHandler(
     if (!refreshToken) {
       throw new ErrorHandler('Unauthorized!', HttpCode.UNAUTHORIZED);
     }
+
     const result = await UserService.refreshToken(refreshToken);
+    res.cookie('refreshToken', result.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE === EnvironmentEnum.prod,
+      maxAge: Number(process.env.COOKIE_EXPIRES_TIME) * DAY_IN_MILLISECOND,
+    });
     res.status(HttpCode.OK).json({ success: true, message: '', data: result });
   },
 );

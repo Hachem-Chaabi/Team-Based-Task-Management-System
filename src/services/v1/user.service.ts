@@ -25,6 +25,9 @@ const login = async (email: string, password: string) => {
   const token = JwtHelper.GenerateToken(payload, TokenEnum.access);
   const refreshToken = JwtHelper.GenerateToken(payload, TokenEnum.refresh);
 
+  // create session
+  await userRepository.createSession(user?.id, refreshToken);
+
   user.passwordHash = undefined;
 
   return { user, token, refreshToken };
@@ -62,12 +65,26 @@ const refreshToken = async (refreshToken: string) => {
     throw new ErrorHandler('Invalid Token!', HttpCode.UNAUTHORIZED);
   }
 
+  const session = await userRepository.getSession(refreshToken);
+
+  if (!session) {
+    throw new ErrorHandler('Invalid session!', HttpCode.UNAUTHORIZED);
+  }
+
   const payload: TokenData = { id: decoded?.id };
 
   const token = JwtHelper.GenerateToken(payload, TokenEnum.access);
+  const newRefreshToken = JwtHelper.GenerateToken(payload, TokenEnum.refresh);
 
-  return token;
+  // update session
+  await userRepository.updateSession(session?.id, newRefreshToken);
+
+  return { token, refreshToken: newRefreshToken };
 };
+
+const deleteSession = async (refreshToken: string) => {
+  await userRepository.deleteSession(refreshToken)
+}
 
 const getUserProfile = async (id: string) => {
   const user = await userRepository.getById(id);
@@ -157,4 +174,5 @@ export default {
   // createUser,
   updateUser,
   deleteUser,
+  deleteSession
 };
