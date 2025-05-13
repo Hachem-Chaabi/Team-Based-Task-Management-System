@@ -6,13 +6,13 @@ const loginSchema = z.object({
 });
 
 const registerSchema = z.object({
-  name: z.string(),
+  name: z.string().min(3),
   email: z.string().email(),
   password: z.string().min(8).max(20),
 });
 
 const updateProfile = z.object({
-  name: z.string(),
+  name: z.string().min(3),
   email: z.string().email(),
 });
 

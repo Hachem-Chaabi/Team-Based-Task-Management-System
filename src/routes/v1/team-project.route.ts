@@ -21,11 +21,6 @@ router
     AuthorizeRole.AuthorizeRole([RolesEnum.admin, RolesEnum.superAdmin]),
     validator(TeamProjectValidator.teamProjectSchema),
     TeamProjectController.create,
-  )
-  .delete(
-    Authorization.Authenticated,
-    AuthorizeRole.AuthorizeRole([RolesEnum.admin, RolesEnum.superAdmin]),
-    TeamProjectController.remove,
   );
 
 router
@@ -34,6 +29,11 @@ router
     Authorization.Authenticated,
     AuthorizeRole.AuthorizeRole([RolesEnum.admin, RolesEnum.superAdmin]),
     TeamProjectController.getById,
+  )
+  .delete(
+    Authorization.Authenticated,
+    AuthorizeRole.AuthorizeRole([RolesEnum.admin, RolesEnum.superAdmin]),
+    TeamProjectController.remove,
   );
 
 export default router;

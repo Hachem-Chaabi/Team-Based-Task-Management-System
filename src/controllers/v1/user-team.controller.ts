@@ -43,7 +43,7 @@ const create: RequestHandler = AsyncHandler(async (req: Request, res: Response):
 // @route   DELETE /api/users-teams
 // @access  Private
 const remove: RequestHandler = AsyncHandler(async (req: Request, res: Response): Promise<void> => {
-  const { userId, teamId } = req?.body;
+  const { userId, teamId } = req?.params;
   const result = await UserTeamService.remove(userId, teamId);
   res.status(HttpCode.OK).json({
     success: true,

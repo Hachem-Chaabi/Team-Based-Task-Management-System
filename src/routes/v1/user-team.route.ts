@@ -21,12 +21,6 @@ router
     AuthorizeRole.AuthorizeRole([RolesEnum.admin, RolesEnum.superAdmin]),
     validator(UserTeamValidator.userTeamSchema),
     UserTeamController.create,
-  )
-  .delete(
-    Authorization.Authenticated,
-    AuthorizeRole.AuthorizeRole([RolesEnum.admin, RolesEnum.superAdmin]),
-    validator(UserTeamValidator.userTeamSchema),
-    UserTeamController.remove,
   );
 
 router
@@ -35,6 +29,12 @@ router
     Authorization.Authenticated,
     AuthorizeRole.AuthorizeRole([RolesEnum.admin, RolesEnum.superAdmin]),
     UserTeamController.getById,
+  )
+  .delete(
+    Authorization.Authenticated,
+    AuthorizeRole.AuthorizeRole([RolesEnum.admin, RolesEnum.superAdmin]),
+    validator(UserTeamValidator.userTeamSchema),
+    UserTeamController.remove,
   );
 
 export default router;
