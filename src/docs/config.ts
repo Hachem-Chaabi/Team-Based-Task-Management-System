@@ -12,7 +12,7 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: 'http://localhost:5000',
+      url: 'https://team-based-task-management-system.onrender.com',
       description: 'Local server',
     },
   ],
