@@ -6,4 +6,5 @@ declare namespace Express {
 
 interface TokenData {
   id: string | null;
+  sessionId?: string
 }

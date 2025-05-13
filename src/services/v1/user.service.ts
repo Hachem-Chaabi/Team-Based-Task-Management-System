@@ -6,32 +6,44 @@ import userRepository from '../../database/repositories/user.repository';
 import { User } from '../../../generated/prisma';
 
 const login = async (email: string, password: string) => {
-  const options = { email };
-
-  const user = await userRepository.getOneByQuery(options);
+  const user = await userRepository.getOneByQuery({ email });
 
   if (!user) {
     throw new ErrorHandler('No user found', HttpCode.NOT_FOUND);
   }
 
-  const matched = await JwtHelper.PasswordCompare(password, user?.passwordHash);
+  const matched = await JwtHelper.PasswordCompare(password, user.passwordHash);
 
   if (!matched) {
     throw new ErrorHandler('Invalid credentials', HttpCode.BAD_REQUEST);
   }
 
-  const payload: TokenData = { id: user?.id };
+  // 🧹 Delete old sessions for the user
+  await userRepository.deleteSessionByUserID(user?.id);
 
-  const token = JwtHelper.GenerateToken(payload, TokenEnum.access);
-  const refreshToken = JwtHelper.GenerateToken(payload, TokenEnum.refresh);
+  // 🔐 Create a new session and hash refresh token
+  const rawRefreshToken = JwtHelper.GenerateToken({ id: user.id }, TokenEnum.refresh);
 
-  // create session
-  await userRepository.createSession(user?.id, refreshToken);
+  const session = await userRepository.createSession(user.id, rawRefreshToken);
 
+  // 🧾 Attach sessionId to access token payload
+  const payload: TokenData = {
+    id: user.id,
+    sessionId: session?.id,
+  };
+
+  const accessToken = JwtHelper.GenerateToken(payload, TokenEnum.access);
+
+  // 🧼 Remove sensitive data
   user.passwordHash = undefined;
 
-  return { user, token, refreshToken };
+  return {
+    user,
+    token: accessToken,
+    refreshToken: rawRefreshToken,
+  };
 };
+
 
 const register = async (name: string, email: string, password: string) => {
   const exists = await userRepository.getOneByQuery({ email });

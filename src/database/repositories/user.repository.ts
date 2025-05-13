@@ -50,8 +50,9 @@ const remove = async (id: string) => {
   return user;
 };
 
+// Sessions
 const createSession = async (userId: string, refreshToken: string) => {
-  await prisma.session.create({
+  const session = await prisma.session.create({
     data: {
       userId,
       refreshToken,
@@ -60,6 +61,8 @@ const createSession = async (userId: string, refreshToken: string) => {
       ),
     },
   });
+
+  return session;
 };
 
 const getSession = async (refreshToken: string) => {
@@ -86,6 +89,10 @@ const deleteSession = async (refreshToken: string) => {
   await prisma.session.deleteMany({ where: { refreshToken } });
 };
 
+const deleteSessionByUserID = async (userId: string) => {
+  await prisma.session.deleteMany({ where: { userId } });
+};
+
 export default {
   getAll,
   getById,
@@ -98,4 +105,5 @@ export default {
   getSession,
   updateSession,
   deleteSession,
+  deleteSessionByUserID,
 };
