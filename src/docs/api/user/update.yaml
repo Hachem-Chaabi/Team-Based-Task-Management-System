@@ -1,0 +1,40 @@
+paths:
+  /api/superadmin/users/{id}:
+    put:
+      security:
+        - BearerAuth: []
+      tags:
+        - User
+      summary: update a user
+      parameters:
+        - name: id
+          in: path
+          description: ID of User to update
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#components/schemas/UpdateUser"
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: Internal server error!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"

@@ -39,6 +39,9 @@ components:
         email:
           type: string
           description: The email of the user
+        role:
+          type: string
+          description: the role of the user
 
     Task:
       type: object
